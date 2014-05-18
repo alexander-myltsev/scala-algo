@@ -6,28 +6,8 @@ import scala.annotation._
 object Task2 {
   private var comparisons = 0
 
-  def quicksortImperative(arr: Array[Int]) {
+  def quicksortImperative(arr: Array[Int], choosePivot: (Array[Int], Int, Int) => Int) {
     def impl(begin: Int, size: Int) {
-      def choosePivotMedian = {
-        val median = if (size % 2 == 0) size / 2 - 1 else size / 2
-        if (arr(begin + median) < arr(begin) &&
-              arr(begin) < arr(begin + size - 1)) 0
-        else if (arr(begin + size - 1) < arr(begin) &&
-                   arr(begin) < arr(begin + median)) 0 
-
-        else if (arr(begin) < arr(begin + median) &&
-                   arr(begin + median) < arr(begin + size - 1)) median
-        else if (arr(begin + size - 1) < arr(begin + median) &&
-                   arr(begin + median) < arr(begin)) median
-
-        else size - 1
-      }
-      def choosePivotFirst = 0
-      def choosePivotLast = size - 1
-      def choosePivotRandom = Rand.r(size) 
-
-      def choosePivot = choosePivotMedian
-
       @tailrec
       def partition(i: Int, split: Int): Int =
         if (i >= size) {
@@ -41,7 +21,8 @@ object Task2 {
         else partition(i + 1, split)
 
       if (size > 1) {
-        Util.exchange(arr, begin + choosePivot, begin)
+        val pivot = choosePivot(arr, begin, size)
+        if (pivot != 0) Util.exchange(arr, begin + pivot, begin)
 
         val split = partition(1, 1)
         impl(begin, split - 1)
@@ -56,9 +37,28 @@ object Task2 {
     impl(0, arr.size)
   }
 
+  def choosePivotMedian(arr: Array[Int], begin: Int, size: Int) = {
+    val median = if (size % 2 == 0) size / 2 - 1 else size / 2
+    if (arr(begin + median) < arr(begin) &&
+          arr(begin) < arr(begin + size - 1)) 0
+    else if (arr(begin + size - 1) < arr(begin) &&
+               arr(begin) < arr(begin + median)) 0
+
+    else if (arr(begin) < arr(begin + median) &&
+               arr(begin + median) < arr(begin + size - 1)) median
+    else if (arr(begin + size - 1) < arr(begin + median) &&
+               arr(begin + median) < arr(begin)) median
+
+    else size - 1
+  }
+
+  def choosePivotFirst(arr: Array[Int], begin: Int, size: Int) = 0
+  def choosePivotLast(arr: Array[Int], begin: Int, size: Int) = size - 1
+  def choosePivotRandom(arr: Array[Int], begin: Int, size: Int) = Rand.r(size)
+
   def main(args: Array[String]) {
 	val numbers = Source.fromFile("QuickSort.txt").getLines.toArray.map { _.toInt }
-    quicksortImperative(numbers)
+    quicksortImperative(numbers, choosePivotFirst)
     println(s"number of comparisons: $comparisons")
   }
 }
