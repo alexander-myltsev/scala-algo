@@ -9,13 +9,22 @@ object Task2 {
   def quicksortImperative(arr: Array[Int]) {
     def impl(begin: Int, size: Int) {
       def choosePivotMedian = {
-        val median = math.max(size - 1, 0) / 2
-        if (arr(begin + median) <= arr(begin) && arr(begin) <= arr(begin + size - 1)) 0
-        else if (arr(begin) <= arr(begin + median) && arr(begin + median) <= arr(begin + size - 1)) median
+        val median = if (size % 2 == 0) size / 2 - 1 else size / 2
+        if (arr(begin + median) < arr(begin) &&
+              arr(begin) < arr(begin + size - 1)) 0
+        else if (arr(begin + size - 1) < arr(begin) &&
+                   arr(begin) < arr(begin + median)) 0 
+
+        else if (arr(begin) < arr(begin + median) &&
+                   arr(begin + median) < arr(begin + size - 1)) median
+        else if (arr(begin + size - 1) < arr(begin + median) &&
+                   arr(begin + median) < arr(begin)) median
+
         else size - 1
       }
       def choosePivotFirst = 0
       def choosePivotLast = size - 1
+      def choosePivotRandom = Rand.r(size) 
 
       def choosePivot = choosePivotMedian
 
@@ -38,8 +47,8 @@ object Task2 {
         impl(begin, split - 1)
         impl(begin + split, size - split)
 
-        comparisons += math.max(split - 1 - 1, 0)
-        comparisons += math.max(size - split - 1, 0)
+        comparisons += math.max(split - 1, 0)
+        comparisons += math.max(size - split, 0)
       }
     }
 
