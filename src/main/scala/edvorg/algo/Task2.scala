@@ -8,26 +8,20 @@ object Task2 {
     def impl(begin: Int, size: Int) {
       def choosePivot = 0
 
-      def exchange(i: Int, j: Int) {
-        val tmp = arr(i)
-        arr(i) = arr(j)
-        arr(j) = tmp
-      }
-
       @tailrec
       def partition(i: Int, split: Int): Int =
         if (i >= size) {
-          exchange(begin, begin + split - 1)
+          Util.exchange(arr, begin, begin + split - 1)
           split
         }
         else if (arr(begin + i) < arr(begin)) {
-          exchange(begin + split, begin + i)
+          Util.exchange(arr, begin + split, begin + i)
           partition(i + 1, split + 1)
         }
         else partition(i + 1, split)
 
       if (size > 1) {
-        exchange(begin + choosePivot, begin)
+        Util.exchange(arr, begin + choosePivot, begin)
 
         val split = partition(1, 1)
         impl(begin, split - 1)
