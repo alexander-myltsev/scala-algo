@@ -1,7 +1,5 @@
 package edvorg.algo
 
-// 2407905288 ok
-
 import scala.io.Source
 
 object Task1 {
