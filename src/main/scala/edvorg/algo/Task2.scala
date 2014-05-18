@@ -25,11 +25,12 @@ object Task2 {
         if (pivot != 0) Util.exchange(arr, begin + pivot, begin)
 
         val split = partition(1, 1)
-        impl(begin, split - 1)
-        impl(begin + split, size - split)
 
         comparisons += math.max(split - 1, 0)
         comparisons += math.max(size - split, 0)
+
+        impl(begin, split - 1)
+        impl(begin + split, size - split)
       }
     }
 
