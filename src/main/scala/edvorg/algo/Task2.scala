@@ -10,7 +10,7 @@ object Task2 {
 
   def quicksortImperative(arr: Array[Int]) {
     def impl(begin: Int, size: Int) {
-      def choosePivot(size: Int) = 0
+      def choosePivot = 0
 
       def exchange(i: Int, j: Int) {
         val tmp = arr(i)
@@ -19,21 +19,21 @@ object Task2 {
       }
 
       @tailrec
-      def partition(i: Int, split: Int, begin: Int, size: Int): Int =
+      def partition(i: Int, split: Int): Int =
         if (i >= size) {
           exchange(begin, begin + split - 1)
           split
         }
         else if (arr(begin + i) < arr(begin)) {
           exchange(begin + split, begin + i)
-          partition(i + 1, split + 1, begin, size)
+          partition(i + 1, split + 1)
         }
-        else partition(i + 1, split, begin, size)
+        else partition(i + 1, split)
 
       if (size > 1) {
-        exchange(begin + choosePivot(size), begin)
+        exchange(begin + choosePivot, begin)
 
-        val split = partition(1, 1, begin, size)
+        val split = partition(1, 1)
         impl(begin, split - 1)
         impl(begin + split, size - split)
       }
