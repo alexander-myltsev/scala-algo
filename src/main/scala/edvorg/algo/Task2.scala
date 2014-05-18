@@ -4,10 +4,6 @@ import scala.io.Source
 import scala.annotation._
 
 object Task2 {
-  private[this] val random = new scala.util.Random(System.currentTimeMillis())
-  private[this] def r = random.nextInt
-  private[this] def r(p: Int) = random.nextInt(p)
-
   def quicksortImperative(arr: Array[Int]) {
     def impl(begin: Int, size: Int) {
       def choosePivot = 0
@@ -44,9 +40,6 @@ object Task2 {
 
   def main(args: Array[String]) {
 	val numbers = Source.fromFile("QuickSort.txt").getLines.toArray.map { _.toInt }
-
-    val arr = Array(4, 3, 1, 5, 7, 6, 8, 2)
-    quicksortImperative(arr)
-    arr foreach (x => println(x))
+    quicksortImperative(numbers)
   }
 }
