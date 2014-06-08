@@ -68,7 +68,6 @@ object Task4 extends App {
     println("fisrt dfs")
 
     val visited = new Array[Boolean](verticesCount + 1)
-    var s = 0
     var t = 0
     var i = verticesCount
 
@@ -76,9 +75,7 @@ object Task4 extends App {
       visited(i) = true
 
       if (graph.isDefinedAt(i)) graph(i) foreach { i =>
-        if (!visited(i)) {
-          dfs(i)
-        }
+        if (!visited(i)) dfs(i)
       }
 
       t += 1
@@ -87,10 +84,7 @@ object Task4 extends App {
     }
 
     do {
-      if (!visited(i)) {
-        s = i
-        dfs(i)
-      }
+      if (!visited(i)) dfs(i)
       i -= 1
     }
     while (i > 0)
@@ -114,9 +108,7 @@ object Task4 extends App {
       groupSize += 1
 
       if (graph.isDefinedAt(f2(i))) graph(f2(i)) foreach { i =>
-        if (!visited(f1(i))) {
-          dfs(f1(i))
-        }
+        if (!visited(f1(i))) dfs(f1(i))
       }
     }
 
