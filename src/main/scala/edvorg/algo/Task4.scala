@@ -5,9 +5,21 @@ import scala.io.Source
 object Task4 extends App {
 
   val file = "SCC.txt"
-  val verticesCount = 875714
+  val verticesCount = graphSize(file)
   val f1 = new Array[Int](verticesCount + 1)
   val f2 = new Array[Int](verticesCount + 1)
+
+  def graphSize(file: String) = {
+    var max = 0
+
+    val source = Source.fromFile(file).getLines
+    while (source.hasNext) {
+      val edge = source.next.split(' ').map{ _.toInt }
+      max = math.max(max, math.max(edge(0), edge(1)))
+    }
+
+    max
+  }
 
   def loadGraph(file: String, from: Int, to: Int) = {
     val graph = collection.mutable.Map[Int, Array[Int]]()
@@ -53,19 +65,19 @@ object Task4 extends App {
   }
 
   def first(graph: collection.mutable.Map[Int, Array[Int]]) {
-    println("dfs1")
+    println("fisrt dfs")
 
-    val visited1 = new Array[Boolean](verticesCount + 1)
+    val visited = new Array[Boolean](verticesCount + 1)
     var s = 0
     var t = 0
     var i = verticesCount
 
-    def dfs1(i: Int) {
-      visited1(i) = true
+    def dfs(i: Int) {
+      visited(i) = true
 
       if (graph.isDefinedAt(i)) graph(i) foreach { i =>
-        if (!visited1(i)) {
-          dfs1(i)
+        if (!visited(i)) {
+          dfs(i)
         }
       }
 
@@ -75,9 +87,9 @@ object Task4 extends App {
     }
 
     do {
-      if (!visited1(i)) {
+      if (!visited(i)) {
         s = i
-        dfs1(i)
+        dfs(i)
       }
       i -= 1
     }
@@ -85,9 +97,9 @@ object Task4 extends App {
   }
 
   def second(graph: collection.mutable.Map[Int, Array[Int]]) {
-    println("dfs2")
+    println("second dfs")
 
-    val visited2 = new Array[Boolean](verticesCount + 1)
+    val visited = new Array[Boolean](verticesCount + 1)
     var groupSize = 0
     var i = verticesCount
 
@@ -97,21 +109,21 @@ object Task4 extends App {
 
     val res = collection.mutable.PriorityQueue[Int](0, 0, 0, 0, 0)(reverse)
 
-    def dfs2(i: Int) {
-      visited2(i) = true
+    def dfs(i: Int) {
+      visited(i) = true
       groupSize += 1
 
       if (graph.isDefinedAt(f2(i))) graph(f2(i)) foreach { i =>
-        if (!visited2(f1(i))) {
-          dfs2(f1(i))
+        if (!visited(f1(i))) {
+          dfs(f1(i))
         }
       }
     }
 
     do {
-      if (!visited2(i)) {
+      if (!visited(i)) {
         groupSize = 0
-        dfs2(i)
+        dfs(i)
         res.enqueue(groupSize)
         res.dequeue()
       }
