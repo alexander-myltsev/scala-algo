@@ -12,26 +12,29 @@ object Task4 extends App {
   def loadGraph(file: String, from: Int, to: Int) = {
     val graph = collection.mutable.Map[Int, Array[Int]]()
     val ends = new Array[Int](verticesCount + 1)
-    val counts = new Array[Int](verticesCount + 1)
 
     {
-      val source = Source.fromFile(file).getLines
-      while (source.hasNext) {
-        val edge = source.next.split(' ').map{ _.toInt }
-        counts(edge(from)) += 1
+      val counts = new Array[Int](verticesCount + 1)
+
+      {
+        val source = Source.fromFile(file).getLines
+        while (source.hasNext) {
+          val edge = source.next.split(' ').map{ _.toInt }
+          counts(edge(from)) += 1
+        }
       }
+
+      println("counts")
+
+      var i = 1
+
+      do {
+        graph(i) = new Array(counts(i))
+
+        i += 1
+      }
+      while (i <= verticesCount)
     }
-
-    println("counts")
-
-    var i = 1
-
-    do {
-      graph(i) = new Array(counts(i))
-
-      i += 1
-    }
-    while (i <= verticesCount)
 
     println("arrays")
 
