@@ -9,11 +9,7 @@ object Task4 extends App {
   val f1 = new Array[Int](verticesCount + 1)
   val f2 = new Array[Int](verticesCount + 1)
 
-  def first() {
-    println("dfs1")
-
-    val visited1 = new Array[Boolean](verticesCount + 1)
-
+  def loadGraph(file: String, from: Int, to: Int) = {
     val graph = collection.mutable.Map[Int, Array[Int]]()
     val ends = new Array[Int](verticesCount + 1)
     val counts = new Array[Int](verticesCount + 1)
@@ -22,32 +18,41 @@ object Task4 extends App {
       val source = Source.fromFile(file).getLines
       while (source.hasNext) {
         val edge = source.next.split(' ').map{ _.toInt }
-        counts(edge(1)) += 1
+        counts(edge(from)) += 1
       }
     }
 
     println("counts")
 
+    var i = 1
+
+    do {
+      graph(i) = new Array(counts(i))
+
+      i += 1
+    }
+    while (i <= verticesCount)
+
+    println("arrays")
+
     {
-      var i = 1
-
-      do {
-        graph(i) = new Array(counts(i))
-
-        i += 1
-      }
-      while (i <= verticesCount)
-
-      println("arrays")
-
       val source = Source.fromFile(file).getLines
       while (source.hasNext) {
         val edge = source.next.split(' ').map{ _.toInt }
-        graph(edge(1)).update(ends(edge(1)), edge(0))
-        ends(edge(1)) += 1
+        graph(edge(from)).update(ends(edge(from)), edge(to))
+        ends(edge(from)) += 1
       }
     }
 
+    println("loaded")
+
+    graph
+  }
+
+  def first(graph: collection.mutable.Map[Int, Array[Int]]) {
+    println("dfs1")
+
+    val visited1 = new Array[Boolean](verticesCount + 1)
     var s = 0
     var t = 0
     var i = verticesCount
@@ -55,22 +60,11 @@ object Task4 extends App {
     def dfs1(i: Int) {
       visited1(i) = true
 
-      // if (graph.isDefinedAt(i)) graph(i) foreach { i =>
-      //   if (!visited1(i)) {
-      //     dfs1(i)
-      //   }
-      // }
-      if (graph.isDefinedAt(i)) {
-        var j = 0
-
-        while (j < graph(i).length) {
-          if (!visited1(graph(i)(j))) {
-            dfs1(graph(i)(j))
-          }
-          j += 1
+      if (graph.isDefinedAt(i)) graph(i) foreach { i =>
+        if (!visited1(i)) {
+          dfs1(i)
         }
       }
-
 
       t += 1
       f1(i) = t
@@ -87,47 +81,10 @@ object Task4 extends App {
     while (i > 0)
   }
 
-  def second() {
+  def second(graph: collection.mutable.Map[Int, Array[Int]]) {
     println("dfs2")
 
-    println("loaded")
-
     val visited2 = new Array[Boolean](verticesCount + 1)
-
-    val graph = collection.mutable.Map[Int, Array[Int]]()
-    val ends = new Array[Int](verticesCount + 1)
-    val counts = new Array[Int](verticesCount + 1)
-
-    {
-      val source = Source.fromFile(file).getLines
-      while (source.hasNext) {
-        val edge = source.next.split(' ').map{ _.toInt }
-        counts(edge(0)) += 1
-      }
-    }
-
-    println("counts")
-
-    {
-      var i = 1
-
-      do {
-        graph(i) = new Array(counts(i))
-
-        i += 1
-      }
-      while (i <= verticesCount)
-
-      println("arrays")
-
-      val source = Source.fromFile(file).getLines
-      while (source.hasNext) {
-        val edge = source.next.split(' ').map{ _.toInt }
-        graph(edge(0)).update(ends(edge(0)), edge(1))
-        ends(edge(0)) += 1
-      }
-    }
-
     var groupSize = 0
     var i = verticesCount
 
@@ -140,6 +97,7 @@ object Task4 extends App {
     def dfs2(i: Int) {
       visited2(i) = true
       groupSize += 1
+
       if (graph.isDefinedAt(f2(i))) graph(f2(i)) foreach { i =>
         if (!visited2(f1(i))) {
           dfs2(f1(i))
@@ -161,6 +119,6 @@ object Task4 extends App {
     println(res.toList.sorted.reverse.mkString(","))
   }
 
-  first()
-  second()
+  first(loadGraph(file, 1, 0))
+  second(loadGraph(file, 0, 1))
 }
