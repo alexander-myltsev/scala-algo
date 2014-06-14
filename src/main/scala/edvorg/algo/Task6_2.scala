@@ -3,15 +3,13 @@ package edvorg.algo
 import io.Source
 
 object Task6_2 extends App {
-  val arr = Source.fromFile("Median.txt").getLines.map { _.toLong }.toVector.sorted
+  val arr = Source.fromFile("Median.txt").getLines.map { _.toLong }.toVector
 
-  def median(k: Int) = 1
+  def median(k: Int) = (arr take k).sorted.apply((k + 1) / 2 - 1)
 
   val result = {
-    for {
-      i <- 0 until arr.length
-    } yield median(i + 1)
+    for { i <- 1 to arr.length } yield median(i)
   }.sum % arr.length
 
-  println(s"result: $result")
+  println(s"arr size: ${arr.length} result: $result")
 }
