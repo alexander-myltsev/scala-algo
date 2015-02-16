@@ -1,20 +1,31 @@
 package edvorg.algo
 
+import scala.annotation.tailrec
 import scala.io.Source
 
+/*
+  1. Elapsed time: 44851932186ns
+
+ */
 object Task1 {
   def main(args: Array[String]) {
     val numbers = Source.fromFile("IntegerArray.txt").getLines().toArray.map { _.toInt }
 
     def mergeAndCountInversions(left: Array[Int], right: Array[Int]): (Array[Int], Long) = {
-      def impl(left: Array[Int], right: Array[Int], full: Array[Int], inv: Long): (Array[Int], Long) =
-        if (left.isEmpty && right.isEmpty) (full, inv)
-        else if (left.isEmpty) impl(left, right.tail, full ++ Array(right.head), inv)
-        else if (right.isEmpty) impl(left.tail, right, full ++ Array(left.head), inv)
-        else if (left.head <= right.head) impl(left.tail, right, full ++ Array(left.head), inv)
-        else impl(left, right.tail, full ++ Array(right.head), inv + left.length)
+      val mergedArray = Array.fill(left.length + right.length)(0)
+      @tailrec
+      def inversions(leftIdx: Int, rightIdx: Int, idx: Int, inv: Long): Long =
+        if (leftIdx == left.length && rightIdx == right.length) inv
+        else if (leftIdx == left.length)
+          inversions(leftIdx, rightIdx + 1, { mergedArray(idx) = right(rightIdx); idx + 1 }, inv)
+        else if (rightIdx == right.length)
+          inversions(leftIdx + 1, rightIdx, { mergedArray(idx) = left(leftIdx); idx + 1 }, inv)
+        else if (left(leftIdx) <= right(rightIdx))
+          inversions(leftIdx + 1, rightIdx, { mergedArray(idx) = left(leftIdx); idx + 1 }, inv)
+        else
+          inversions(leftIdx, rightIdx + 1, { mergedArray(idx) = right(rightIdx); idx + 1 }, inv + left.length - leftIdx)
 
-      impl(left, right, Array(), 0)
+      (mergedArray, inversions(0, 0, 0, 0))
     }
 
     def countInversions(list: Array[Int]): (Array[Int], Long) = {
