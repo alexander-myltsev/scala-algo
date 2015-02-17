@@ -1,35 +1,44 @@
 package edvorg.algo
 
+import scala.annotation.tailrec
 import scala.io.Source
 
 object Task1 {
   def main(args: Array[String]) {
-	val numbers = Source.fromFile("IntegerArray.txt").getLines.toArray.map { _.toInt }
+    val numbers = Source.fromFile("IntegerArray.txt").getLines().toArray.map { _.toInt }
 
-	def mergeAndCountInversions(left: Array[Int], right: Array[Int]) = {
-	  def impl(left: Array[Int], right: Array[Int], full: Array[Int], inv: Long): (Array[Int], Long) =
-		if (left.isEmpty && right.isEmpty) (full, inv)
-		else if (left.isEmpty) impl(left, right.tail, full ++ Array(right.head), inv)
-		else if (right.isEmpty) impl(left.tail, right, full ++ Array(left.head), inv)
-		else if (left.head <= right.head) impl(left.tail, right, full ++ Array(left.head), inv)
-		else impl(left, right.tail, full ++ Array(right.head), inv + left.length)
+    def mergeAndCountInversions(left: Array[Int], right: Array[Int]): (Array[Int], Long) = {
+      val mergedArray = Array.fill(left.length + right.length)(0)
+      @tailrec
+      def inversions(leftIdx: Int, rightIdx: Int, idx: Int, inv: Long): Long = {
+        val leftEmpty  = leftIdx  == left.length
+        val rightEmpty = rightIdx == right.length
 
-	  impl(left, right, Array(), 0)
-	}
+        if (leftEmpty && rightEmpty) inv
+        else if (leftEmpty)
+          inversions(leftIdx, rightIdx + 1, { mergedArray(idx) = right(rightIdx); idx + 1 }, inv)
+        else if (rightEmpty || left(leftIdx) <= right(rightIdx))
+          inversions(leftIdx + 1, rightIdx, { mergedArray(idx) = left(leftIdx); idx + 1 }, inv)
+        else
+          inversions(leftIdx, rightIdx + 1, { mergedArray(idx) = right(rightIdx); idx + 1 }, inv + left.length - leftIdx)
+      }
 
-	def countInversions(list: Array[Int]): (Array[Int], Long)  = {
-	  if (list.isEmpty || list.tail.isEmpty) (list, 0)
-	  else {
-		val (left, right) = list splitAt list.length / 2
-		val (leftSorted, leftInversions) = countInversions(left)
-		val (rightSorted, rightInversions) = countInversions(right)
-		val (merged, splitInversions) = mergeAndCountInversions(leftSorted, rightSorted)
-		(merged, leftInversions + rightInversions + splitInversions)
-	  }
-	}
+      (mergedArray, inversions(0, 0, 0, 0))
+    }
 
-	val (sorted, inversions) = countInversions(numbers)
+    def countInversions(list: Array[Int]): (Array[Int], Long) = {
+      if (list.size <= 1) (list, 0)
+      else {
+        val (left, right) = list.splitAt(list.length / 2)
+        val (leftSorted, leftInversions) = countInversions(left)
+        val (rightSorted, rightInversions) = countInversions(right)
+        val (merged, splitInversions) = mergeAndCountInversions(leftSorted, rightSorted)
+        (merged, leftInversions + rightInversions + splitInversions)
+      }
+    }
 
-	println(s"number of inversions is $inversions")
+    val (sorted, inversions) = countInversions(numbers)
+
+    println(s"number of inversions is $inversions")
   }
 }
